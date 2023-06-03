@@ -1,0 +1,714 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "description": "This is an API to Kapu$ta Finance Project",
+    "version": "1.0.0",
+    "title": "Kapu$ta Finance"
+  },
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Operations about registration and authentication"
+    },
+    {
+      "name": "user",
+      "description": "Operations about setting up user's balance"
+    },
+    {
+      "name": "transactions",
+      "description": "Operations about user's transactions"
+    },
+    {
+      "name": "categories",
+      "description": " Operations about available categories for user"
+    }
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register user",
+        "requestBody": {
+          "description": "Created user object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Auth"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "content":{
+            "application/json":{
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "User has been created"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "balance": {
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  }
+                }
+              }
+            }
+          }}},
+          "409": {
+            "description": "The user with such email already exists"
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Signs user in into the system",
+        "requestBody": {
+          "description": "The user's email for signing in",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Auth"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "User has been signed in"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "balance": {
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  }
+                }
+              }
+            }
+          }}},
+          "401": {
+            "description": "Invalid password supplied"
+          },
+          "404": {
+            "description": "The user is not found"
+          }
+        }
+      }
+    },
+    "/auth/signout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Signs out current signed in user session",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/balance": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Sets up user's initial balance",
+        "requestBody": {
+          "description": "Balance object that needs to be added to DB",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Balance"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "operation successful",
+            "content": {
+              "application/json": {
+            "schema": {
+              "$ref": "#/definitions/Balance"
+            }
+          }
+        }
+      }}}
+    },
+    "/transactions": {
+      "post": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "Sets up user's expenses",
+        "requestBody": {
+          "description": "Expenses object that needs to be added to DB",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Transactions"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Transaction has been created"
+                },
+                "transaction": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "category": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "sum": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "08.22.2021"
+                    }
+                  }
+                }
+              }
+            }
+          }}},
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/transactions/{id}": {
+      "delete": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "Deletes user's transactions",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User's transaction ID to delete",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Transaction has been deleted"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid transaction ID supplied"
+          },
+          "403": {
+            "description": "Forbidden to delete this transaction"
+          }
+        }
+      }
+    },
+    "/transactions/summary/{type}/{year}": {
+      "get": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "Finds user's transaction by type and year",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Transaction type value that needs to be considered for filter",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "expense",
+                "income"
+              ]
+            }
+          },
+          {
+            "name": "year",
+            "in": "path",
+            "description": "Transaction year value that needs to be considered for filter",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jan": {
+                  "type": "integer",
+                  "format": "int64",
+                  "example": "26382"
+                },
+                "feb": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "mar": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "apr": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "may": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "jun": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "jul": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "aug": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "sep": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "oct": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "nov": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "dec": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid type or year value"
+          }
+        }
+      }
+    },
+    "/transactions/{type}/{period}": {
+      "get": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "Finds user's transaction for a certain period of time",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Transaction type value that needs to be considered for filter",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "expense",
+                "income"
+              ]
+            }
+          },
+          {
+            "name": "period",
+            "in": "path",
+            "description": "Transaction period value that needs to be considered for filter",
+            "required": true,
+            "type": "string",
+            "format": "data"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "sum": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "data"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "categoryId": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          }
+        }
+      }
+    },
+    "/categories/{type}": {
+      "get": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "Gets available categories",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Transaction type value that needs to be considered for filter",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "expense",
+                "income"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Categories_expenses"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "Adds up a new category",
+        "requestBody": {
+          "description": "This operation is only available with admin access",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/NewCategory"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Transaction type value that needs to be considered for filter",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "expense",
+                "income"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Category has been created"
+                },
+                "category": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }}},
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/categories/{category}": {
+      "delete": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "Deletes category",
+        "description": "This operation is only available with admin access",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "description": "Chosen category to delete",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Forbidden to delete this category"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Auth": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "isActive": {
+          "type": "boolean"
+        },
+        "balance": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "Transactions": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "expense",
+            "income"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "продукты",
+            "алькоголь",
+            "развлечение",
+            "здоровье",
+            "транспорт",
+            "все для дома",
+            "техника",
+            "коммуналка, связь",
+            "спорт, хобби",
+            "образование",
+            "прочее"
+          ]
+        },
+        "sum": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "example": "22.08.2021"
+        }
+      },
+      "xml": {
+        "name": "Transactions"
+      }
+    },
+    "Balance": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "xml": {
+        "name": "Balance"
+      }
+    },
+    "Categories_expenses": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "продукты",
+              "алькоголь",
+              "развлечение",
+              "здоровье",
+              "транспорт",
+              "все для дома",
+              "техника",
+              "коммуналка, связь",
+              "спорт, хобби",
+              "образование",
+              "прочее"
+            ]
+          }
+        }
+      }
+    },
+    "NewCategory": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
